@@ -57,7 +57,7 @@ float determinant(Matrix &matrix) {
         
         for(int i = 0; i < matrix.at(0).size(); i++){
             Matrix minor;
-            copyMatrix(M,minor);
+            copyMatrix(matrix, minor);
             getMinor(minor,0,i);
 
             det += pow(-1, i) * matrix.at(0).at(i) * determinant(minor);
@@ -99,12 +99,12 @@ void inverseMatrix(Matrix &m, Matrix &mi) {
 }
 
 void productMatrixVector(Matrix A, Vector v, Vector &R) {
-    for(int f = 0; f < A.size(); f++){
-    
-    float cell = 0.0;
-    
-    for(int c = 0; c < v.size(); c++) 
-        cell += A.at(f).at(c)*v.at(c);
-    
-    R.at(f) += cell;
+    for(int f = 0; f < A.size(); f++) {
+        float cell = 0.0;
+        
+        for(int c = 0; c < v.size(); c++) 
+            cell += A.at(f).at(c)*v.at(c);
+        
+        R.at(f) += cell;
+    }
 }
