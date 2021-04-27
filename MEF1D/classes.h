@@ -68,6 +68,13 @@ class Mesh {
         Element getElement(int i) {
             return elementList[i];
         }
+
+        Condition getCondition(int i, int type) {
+            if(type == DIRICHLET) 
+                return dirichletList[i];
+            else 
+                return neumannList[i];
+        }
 };
 
 // Class representing an item in the mesh

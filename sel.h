@@ -35,11 +35,39 @@ void createLocalSystems(Mesh &mesh, vector<Matrix> localKs, vector<Vector> local
 }
 
 void assemblyK(Element e, Matrix localK, Matrix &k) {
+    int index1 = e.getNode1() - 1;
+    int index2 = e.getNode2() - 1;
 
+    k.at(index1).at(index1) += localK.at(0).at(0);
+    k.at(index1).at(index2) += localK.at(0).at(1);
+    k.at(index2).at(index1) += localK.at(1).at(0);
+    k.at(index2).at(index2) += localK.at(1).at(1);
 }
 
 void assemblyB(Element e, Vector localB, Vector &b) {
-    
+    int index1 = e.getNode1() - 1;
+    int index2 = e.getNode2() - 1;
+
+    b.at(index1) += localB.at(0);
+    b.at(index2) += localB.at(1);
+}
+
+void showMatrix(Matrix k) {
+    for(int i = 0; i < k.at(0).size(); i++) {
+        cout << "[\t";
+        for(int j = 0; j < k.size(); j++) {
+            cout << k.at(i).at(j) << "\t";
+        }
+        cout << "]\n";
+    }
+}
+
+void showVector(Vector b){
+    cout << "[\t";
+    for(int i = 0; i < b.size(); i++) {
+        cout << b.at(i) << "\t";
+    }
+    cout << "]\n";
 }
 
 void assemble(Mesh &mesh, vector<Matrix> &localKs, vector<Vector> &localBs, Matrix &k, Vector &b) {
@@ -49,5 +77,35 @@ void assemble(Mesh &mesh, vector<Matrix> &localKs, vector<Vector> &localBs, Matr
         assemblyK(e, localKs.at(i), k);
         assemblyB(e, localBs.at(i), b);
     }
+}
+
+void applyNeumann(Mesh &mesh, Vector &b) {
+    for(int i = 0; i < mesh.getSize(NEUMANN); i++) {
+        Condition c = mesh.getCondition(i, NEUMANN);
+
+        b.at(c.getNode1() - 1) += c.getValue();
+    }
+}
+
+void applyDirichlet(Mesh &mesh, Matrix &k, Vector &b) {
+    for(int i = 0; i < mesh.getSize(DIRICHLET); i++) {
+        Condition c = mesh.getCondition(i, DIRICHLET);
+        int index = c.getNode1() - 1;
+
+        k.erase(k.begin() + index);
+        b.erase(b.begin() + index);
+
+        for(int row = 0; row < k.size(); row++) {
+            float cell = k.at(row).at(index);
+
+            k.at(row).erase(k.at(row).begin() + index);
+            b.at(row) += -1 * c.getValue() * cell;
+        }
+    }
+}
+
+void calculate(Matrix &k, Vector &b, Vector &t) {
+    Matrix kInverse;
+
     
 }

@@ -23,7 +23,15 @@ int main() {
 
     readMeshConditions(mesh);
     createLocalSystems(mesh, localKs, localBs);
-    zeroes(k, mesh.getSize(NODES));
-    zeroes(b, mesh.getSize(NODES));
+    zeroes(k, mesh.getSize(NODES)); zeroes(b, mesh.getSize(NODES));
+    assemble(mesh, localKs, localBs, k, b);
+    showMatrix(k); showVector(b);
+    applyNeumann(mesh, b); applyDirichlet(mesh, k, b);
+    zeroes(t, b.size());
+    calculate(k, b, t);
 
+    cout << "La respuesta es: \n";
+    showVector(t);
+
+    return 0;
 }
